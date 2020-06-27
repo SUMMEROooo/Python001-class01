@@ -1,4 +1,4 @@
-# paython内部库
+# python内部库
 import requests
 # bs4第三方库
 from bs4 import BeautifulSoup as bs
@@ -13,47 +13,48 @@ cookie = '_csrf=bb84b6e06c672e9a96b16f619af9981aa25471a609c8200846433ca1739612e7
 header = {'User-Agent': user_agent, 'Cookie': cookie}
 
 # 设置爬取的url地址
-targetUrl = 'https://maoyan.com/films?showType=3'
+target_url = 'https://maoyan.com/films?showType=3'
 
 # 模拟浏览器，发送请求，并返回响应结果（结果为html页面代码）
-response = requests.get(targetUrl, headers = header)
+response = requests.get(target_url, headers = header)
 
 # 使用bs4的html.parser方法解析响应结果
 bs_res = bs(response.text, 'html.parser')
 
 # 存放爬取数据集合
-movieList = []
+movie_list = []
 
 # 爬取目标前10部电影
-tagMovieInfoIndex = 0
-for curMovie in bs_res.find_all('div', attrs={'class': 'movie-hover-info'}):
+tag_movie_info_idx = 0
+for cur_movie in bs_res.find_all('div', attrs={'class': 'movie-hover-info'}):
     # 爬取超过10部，退出
-    if tagMovieInfoIndex == 10 :
+    if tag_movie_info_idx == 10 :
         break
-    tagMovieInfoIndex = tagMovieInfoIndex + 1
-    tagMovieTitleIndex = -1
-    for movieInfo in curMovie.find_all('div', attrs={'class': 'movie-hover-title'}):
-        tagMovieTitleIndex = tagMovieTitleIndex + 1
-        # print(movieInfo)
-        if tagMovieTitleIndex == 0 :
+    tag_movie_info_idx = tag_movie_info_idx + 1
+    tag_movie_title_idx = -1
+    for movie_info in cur_movie.find_all('div', attrs={'class': 'movie-hover-title'}):
+        tag_movie_title_idx = tag_movie_title_idx + 1
+        # print(movie_info)
+        if tag_movie_title_idx == 0 :
             # 电影名称
-            print(movieInfo.find_all('span',)[0].text)
-            movieList.append(movieInfo.find_all('span',)[0].text)
+            print(movie_info.find_all('span',)[0].text)
+            movie_list.append(movie_info.find_all('span',)[0].text)
             continue
-        if tagMovieTitleIndex == 1 :
+        if tag_movie_title_idx == 1 :
             # 电影类型
-            print(movieInfo.contents[2].strip())
-            movieList.append(movieInfo.contents[2].strip())
+            print(movie_info.contents[2].strip())
+            movie_list.append(movie_info.contents[2].strip())
             continue
-        if tagMovieTitleIndex == 3 :
+        if tag_movie_title_idx == 3 :
             # 上映时间
-            print(movieInfo.contents[2].strip())
-            movieList.append(movieInfo.contents[2].strip())
+            print(movie_info.contents[2].strip())
+            movie_list.append(movie_info.contents[2].strip())
             break
-movieTop10 = pd.DataFrame(data = movieList)
+movie_top10 = pd.DataFrame(data = movie_list)
 
 # 写入csv文件
-movieTop10.to_csv('./movieTop10.csv', encoding='GBK', index=False, header=False)
+#movie_top10.to_csv('./movieTop10.csv', encoding='GBK', index=False, header=False)
+movie_top10.to_csv('./movieTop10.csv', encoding='UTF-8', index=False, header=False)
 
 
 
